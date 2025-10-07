@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Results - CBT Practice</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Exam Results</h1>
+        <p><strong>Name:</strong> {{ username }}</p>
+        <p><strong>Score:</strong> {{ score }} / {{ total_questions }}</p>
+        <p><strong>Percentage:</strong> {{ (score / total_questions * 100) | round(2) }}%</p>
+
+        {% if score / total_questions >= 0.8 %}
+            <p class="feedback success">Excellent work! You really know your stuff.</p>
+        {% elif score / total_questions >= 0.5 %}
+            <p class="feedback average">Good job! You’re getting there — keep practicing.</p>
+        {% else %}
+            <p class="feedback fail">Don’t worry, you can always try again. Practice makes perfect!</p>
+        {% endif %}
+
+        <div class="actions">
+            <a href="{{ url_for('exam') }}" class="btn">Retake Exam</a>
+            <a href="{{ url_for('index') }}" class="btn secondary">Go to Home</a>
+        </div>
+    </div>
+</body>
+</html>

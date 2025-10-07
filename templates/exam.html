@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Exam - CBT Practice</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+ 
+</head>
+<body class="exam-page">
+  <div class="exam-container">
+    <header class="exam-header">
+      <h1>Practice Exam</h1>
+      <div id="progress" aria-live="polite"></div>
+      <div id="timer">Time Left: 60:00</div>
+    </header>
+
+    <form id="examForm" method="POST" action="{{ url_for('exam') }}">
+      <label for="username">Your name</label>
+      <input id="username" class="username-input" name="username" type="text" placeholder="Enter your name" required>
+
+      <div id="questions">
+        {% if questions|length == 0 %}
+          <p>No questions found. Use Admin to add questions.</p>
+        {% endif %}
+
+        {% for q in questions %}
+        <div class="question" data-index="{{ loop.index0 }}" data-qid="{{ q.id }}" style="display:none;">
+          <p class="q-number"><strong>Question {{ loop.index }}:</strong></p>
+          <p class="q-text">{{ q.question_text }}</p>
+
+          <div class="options">
+            <label><input type="radio" name="{{ q.id }}" value="1"> {{ q.option1 }}</label>
+            <label><input type="radio" name="{{ q.id }}" value="2"> {{ q.option2 }}</label>
+            <label><input type="radio" name="{{ q.id }}" value="3"> {{ q.option3 }}</label>
+            <label><input type="radio" name="{{ q.id }}" value="4"> {{ q.option4 }}</label>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Question number navigator -->
+      <div id="questionNav" class="question-nav" aria-label="Question navigation"></div>
+
+      <!-- Navigation buttons -->
+      <div class="nav-buttons">
+        <button type="button" id="prevBtn" class="btn secondary">Previous</button>
+        <button type="button" id="nextBtn" class="btn">Next</button>
+        <button type="button" id="submitBtn" class="btn submit">Submit</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal">
+      <h2>Submit Exam?</h2>
+      <p>Are you sure you want to submit your answers?</p>
+      <div class="modal-buttons">
+        <button class="modal-btn confirm-btn" id="confirmYes">Yes, Submit</button>
+        <button class="modal-btn cancel-btn" id="confirmNo">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- External JS -->
+  <script defer src="{{ url_for('static', filename='script.js') }}"></script>
+
+  <!-- Modal JS -->
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+      const examForm = document.getElementById("examForm");
+      const submitBtn = document.getElementById("submitBtn");
+      const modal = document.getElementById("confirmModal");
+      const confirmYes = document.getElementById("confirmYes");
+      const confirmNo = document.getElementById("confirmNo");
+
+      submitBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          modal.style.display = "flex";
+      });
+
+      confirmYes.addEventListener("click", function () {
+          modal.style.display = "none";
+          examForm.submit();
+      });
+
+      confirmNo.addEventListener("click", function () {
+          modal.style.display = "none";
+      });
+
+      window.addEventListener("click", function (e) {
+          if (e.target === modal) {
+              modal.style.display = "none";
+          }
+      });
+  });
+  </script>
+</body>
+</html>

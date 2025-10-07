@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam - CBT Practice</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Exam</h1>
+        <form method="POST">
+            <input type="hidden" name="username" value="{{ username }}">
+
+            <div id="questions">
+                {% for question in questions %}
+                <div class="question" style="display: none;">
+                    <h3>Question {{ loop.index }}:</h3>
+                    <p>{{ question['question_text'] }}</p>
+                    <label><input type="radio" name="{{ question['id'] }}" value="1"> {{ question['option1'] }}</label><br>
+                    <label><input type="radio" name="{{ question['id'] }}" value="2"> {{ question['option2'] }}</label><br>
+                    <label><input type="radio" name="{{ question['id'] }}" value="3"> {{ question['option3'] }}</label><br>
+                    <label><input type="radio" name="{{ question['id'] }}" value="4"> {{ question['option4'] }}</label><br>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="nav-buttons">
+                <button type="button" id="prevBtn" class="btn secondary">Previous</button>
+                <button type="button" id="nextBtn" class="btn">Next</button>
+                <button type="submit" id="submitBtn" class="btn" style="display: none;">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- INLINE SCRIPT HERE -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const questions = document.querySelectorAll(".question");
+            const nextBtn = document.getElementById("nextBtn");
+            const prevBtn = document.getElementById("prevBtn");
+            const submitBtn = document.getElementById("submitBtn");
+            let currentIndex = 0;
+
+            function showQuestion(index) {
+                questions.forEach((q, i) => {
+                    q.style.display = i === index ? "block" : "none";
+                });
+
+                prevBtn.style.display = index === 0 ? "none" : "inline-block";
+                nextBtn.style.display = index === questions.length - 1 ? "none" : "inline-block";
+                submitBtn.style.display = index === questions.length - 1 ? "inline-block" : "none";
+            }
+
+            nextBtn.addEventListener("click", () => {
+                if (currentIndex < questions.length - 1) {
+                    currentIndex++;
+                    showQuestion(currentIndex);
+                }
+            });
+
+            prevBtn.addEventListener("click", () => {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    showQuestion(currentIndex);
+                }
+            });
+
+            // Show first question on load
+            showQuestion(currentIndex);
+        });
+    </script>
+</body>
+</html>
