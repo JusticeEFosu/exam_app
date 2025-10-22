@@ -4,71 +4,141 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Exam - CBT Practice</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
- 
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="exam-page">
-  <div class="exam-container">
-    <header class="exam-header">
-      <h1>Practice Exam</h1>
-      <div id="progress" aria-live="polite"></div>
-      <div id="timer">Time Left: 60:00</div>
-    </header>
+<body class="bg-gray-50 min-h-screen font-sans">
 
-    <form id="examForm" method="POST" action="{{ url_for('exam') }}">
-      <label for="username">Your name</label>
-      <input id="username" class="username-input" name="username" type="text" placeholder="Enter your name" required>
+  <div class="flex min-h-screen">
+    <!-- LEFT PANEL: Question Navigation -->
+    <aside class="w-1/4 bg-gray-100 border-r border-gray-300 p-4">
+      <h2 class="text-xl font-semibold mb-4 text-gray-700">Questions</h2>
+      <div id="questionNav" class="grid grid-cols-5 gap-2"></div>
+    </aside>
 
-      <div id="questions">
-        {% if questions|length == 0 %}
-          <p>No questions found. Use Admin to add questions.</p>
-        {% endif %}
+    <!-- RIGHT PANEL: Main Exam Area -->
+    <main class="flex-1 flex flex-col justify-between p-6">
+      <header class="mb-4">
+        <h1 class="text-2xl font-bold text-gray-800">Practice Exam</h1>
+        <div id="progress" class="text-gray-600 mt-1"></div>
+        <div id="timer" class="text-lg font-semibold text-blue-600 mt-2">Time Left: 60:00</div>
+      </header>
 
-        {% for q in questions %}
-        <div class="question" data-index="{{ loop.index0 }}" data-qid="{{ q.id }}" style="display:none;">
-          <p class="q-number"><strong>Question {{ loop.index }}:</strong></p>
-          <p class="q-text">{{ q.question_text }}</p>
-
-          <div class="options">
-            <label><input type="radio" name="{{ q.id }}" value="1"> {{ q.option1 }}</label>
-            <label><input type="radio" name="{{ q.id }}" value="2"> {{ q.option2 }}</label>
-            <label><input type="radio" name="{{ q.id }}" value="3"> {{ q.option3 }}</label>
-            <label><input type="radio" name="{{ q.id }}" value="4"> {{ q.option4 }}</label>
-          </div>
+      <form id="examForm" method="POST" action="{{ url_for('exam') }}" class="flex flex-col flex-1">
+        <div class="mb-4">
+          <label for="username" class="block text-gray-700 font-medium mb-1">Your name</label>
+          <input id="username" name="username" type="text" placeholder="Enter your name"
+                 class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+                 required>
         </div>
-        {% endfor %}
-      </div>
 
-      <!-- Question number navigator -->
-      <div id="questionNav" class="question-nav" aria-label="Question navigation"></div>
+        <div id="questions" class="flex-1">
+          {% if questions|length == 0 %}
+            <p class="text-gray-600">No questions found. Use Admin to add questions.</p>
+          {% endif %}
 
-      <!-- Navigation buttons -->
-      <div class="nav-buttons">
-        <button type="button" id="prevBtn" class="btn secondary">Previous</button>
-        <button type="button" id="nextBtn" class="btn">Next</button>
-        <button type="button" id="submitBtn" class="btn submit">Submit</button>
-      </div>
-    </form>
+          {% for q in questions %}
+          <div class="question hidden" data-index="{{ loop.index0 }}" data-qid="{{ q.id }}">
+            <p class="q-number font-semibold mb-1 text-gray-700">Question {{ loop.index }}:</p>
+            <p class="q-text mb-3 text-gray-800">{{ q.question_text }}</p>
+
+            <div class="options space-y-2">
+              <label class="block p-2 border rounded-md hover:bg-gray-100">
+                <input type="radio" name="{{ q.id }}" value="1" class="mr-2"> {{ q.option1 }}
+              </label>
+              <label class="block p-2 border rounded-md hover:bg-gray-100">
+                <input type="radio" name="{{ q.id }}" value="2" class="mr-2"> {{ q.option2 }}
+              </label>
+              <label class="block p-2 border rounded-md hover:bg-gray-100">
+                <input type="radio" name="{{ q.id }}" value="3" class="mr-2"> {{ q.option3 }}
+              </label>
+              <label class="block p-2 border rounded-md hover:bg-gray-100">
+                <input type="radio" name="{{ q.id }}" value="4" class="mr-2"> {{ q.option4 }}
+              </label>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Bottom Buttons -->
+        <div class="mt-6 flex justify-between items-center">
+          <button type="button" id="prevBtn" class="hidden bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition">Previous</button>
+          <button type="button" id="nextBtn" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">Next</button>
+          <button type="button" id="submitBtn" class="hidden bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition">Submit</button>
+        </div>
+      </form>
+    </main>
   </div>
 
   <!-- Confirmation Modal -->
-  <div class="modal-overlay" id="confirmModal">
-    <div class="modal">
-      <h2>Submit Exam?</h2>
-      <p>Are you sure you want to submit your answers?</p>
-      <div class="modal-buttons">
-        <button class="modal-btn confirm-btn" id="confirmYes">Yes, Submit</button>
-        <button class="modal-btn cancel-btn" id="confirmNo">Cancel</button>
+  <div class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center" id="confirmModal">
+    <div class="bg-white p-6 rounded-lg shadow-lg text-center w-80">
+      <h2 class="text-lg font-semibold mb-2">Submit Exam?</h2>
+      <p class="text-gray-600 mb-4">Are you sure you want to submit your answers?</p>
+      <div class="flex justify-center gap-3">
+        <button class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600" id="confirmYes">Yes, Submit</button>
+        <button class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400" id="confirmNo">Cancel</button>
       </div>
     </div>
   </div>
 
-  <!-- External JS -->
+  <!-- Tailwind Styles for Active States -->
+ <!-- Tailwind Styles for Active States (plain CSS, works with CDN) -->
+<style>
+  /* base look for the nav buttons (so they are visible even without hover) */
+  .nav-btn {
+    width: 2.5rem;            /* w-10 */
+    height: 2.5rem;           /* h-10 */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.375rem;  /* rounded-md */
+    border: 1px solid #d1d5db;/* border-gray-300 */
+    color: #374151;           /* text-gray-700 */
+    background-color: #e5e7eb;/* bg-gray-200 */
+    font-weight: 500;
+    transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+  }
+
+  .nav-btn:hover {
+    background-color: #60a5fa; /* blue-400 */
+    color: #ffffff;
+  }
+
+  .nav-btn.active {
+    background-color: #3b82f6; /* blue-500 */
+    color: #ffffff;
+    border-color: #2563eb;     /* blue-600 */
+  }
+
+  .nav-btn.answered {
+    background-color: #22c55e; /* green-500 */
+    color: #ffffff;
+    border-color: #16a34a;     /* green-600 */
+  }
+
+  /* make the nav column vertically scrollable if very long */
+  #questionNav .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(5, auto);
+    gap: 0.5rem;
+  }
+
+  /* responsive: fewer columns on small screens */
+  @media (max-width: 640px) {
+    #questionNav .nav-grid {
+      grid-template-columns: repeat(4, auto);
+    }
+  }
+</style>
+
+
+  <!-- Script -->
   <script defer src="{{ url_for('static', filename='script.js') }}"></script>
 
-  <!-- Modal JS -->
+  <!-- Modal Logic -->
   <script>
-  document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
       const examForm = document.getElementById("examForm");
       const submitBtn = document.getElementById("submitBtn");
       const modal = document.getElementById("confirmModal");
@@ -76,25 +146,25 @@
       const confirmNo = document.getElementById("confirmNo");
 
       submitBtn.addEventListener("click", function (e) {
-          e.preventDefault();
-          modal.style.display = "flex";
+        e.preventDefault();
+        modal.style.display = "flex";
       });
 
       confirmYes.addEventListener("click", function () {
-          modal.style.display = "none";
-          examForm.submit();
+        modal.style.display = "none";
+        examForm.submit();
       });
 
       confirmNo.addEventListener("click", function () {
-          modal.style.display = "none";
+        modal.style.display = "none";
       });
 
       window.addEventListener("click", function (e) {
-          if (e.target === modal) {
-              modal.style.display = "none";
-          }
+        if (e.target === modal) {
+          modal.style.display = "none";
+        }
       });
-  });
+    });
   </script>
 </body>
 </html>
