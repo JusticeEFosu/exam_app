@@ -10,8 +10,28 @@
 <body class="bg-gray-50 min-h-screen font-sans">
 
   <div class="flex min-h-screen">
+    <!-- Mobile Menu Button (only visible on mobile) -->
+    <button 
+      id="menuToggle" 
+      class="md:hidden fixed top-4 right-4 z-50 bg-blue-500 text-white p-3 rounded-md shadow-lg hover:bg-blue-600 transition"
+      aria-label="Toggle menu">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+
+    <!-- Overlay for mobile (only visible when sidebar is open) -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
+
     <!-- LEFT PANEL: Question Navigation -->
-    <aside class="w-1/4 bg-gray-100 border-r border-gray-300 p-4">
+    <aside id="sidebar" class="w-1/4 bg-gray-100 border-r border-gray-300 p-4 md:static md:translate-x-0 fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out z-40 md:w-1/4 w-72 overflow-y-auto">
+      <!-- Close button for mobile (only visible on mobile) -->
+      <button id="closeSidebar" class="md:hidden absolute top-4 right-4 text-gray-600 hover:text-gray-800">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+      
       <h2 class="text-xl font-semibold mb-4 text-gray-700">Questions</h2>
       <div id="questionNav" class="grid grid-cols-5 gap-2"></div>
     </aside>
@@ -63,7 +83,7 @@
   </div>
 
   <!-- Confirmation Modal -->
-  <div class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center" id="confirmModal">
+  <div class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50" id="confirmModal">
     <div class="bg-white p-6 rounded-lg shadow-lg text-center w-80">
       <h2 class="text-lg font-semibold mb-2">Submit Exam?</h2>
       <p class="text-gray-600 mb-4">Are you sure you want to submit your answers?</p>
@@ -119,7 +139,23 @@
   /* responsive: fewer columns on small screens */
   @media (max-width: 640px) {
     #questionNav .nav-grid {
-      grid-template-columns: repeat(4, auto);
+      grid-template-columns: repeat(5, auto);
+    }
+  }
+
+  /* Prevent body scroll when sidebar is open on mobile */
+  body.sidebar-open {
+    overflow: hidden;
+  }
+
+  /* Mobile sidebar animation */
+  @media (max-width: 767px) {
+    body.sidebar-open #sidebar {
+      transform: translateX(0);
+    }
+    
+    body.sidebar-open #overlay {
+      display: block;
     }
   }
 </style>
@@ -137,6 +173,13 @@
       const confirmYes = document.getElementById("confirmYes");
       const confirmNo = document.getElementById("confirmNo");
 
+      // Sidebar toggle elements
+      const menuToggle = document.getElementById("menuToggle");
+      const closeSidebar = document.getElementById("closeSidebar");
+      const overlay = document.getElementById("overlay");
+      const body = document.body;
+
+      // Modal submit logic
       submitBtn.addEventListener("click", function (e) {
         e.preventDefault();
         modal.style.display = "flex";
@@ -154,6 +197,27 @@
       window.addEventListener("click", function (e) {
         if (e.target === modal) {
           modal.style.display = "none";
+        }
+      });
+
+      // Sidebar toggle logic (ONLY affects mobile)
+      function openSidebar() {
+        body.classList.add("sidebar-open");
+      }
+
+      function closeSidebarFunc() {
+        body.classList.remove("sidebar-open");
+      }
+
+      menuToggle.addEventListener("click", openSidebar);
+      closeSidebar.addEventListener("click", closeSidebarFunc);
+      overlay.addEventListener("click", closeSidebarFunc);
+
+      // Close sidebar when clicking on a question number (mobile only)
+      const questionNav = document.getElementById("questionNav");
+      questionNav.addEventListener("click", function(e) {
+        if (e.target.classList.contains("nav-btn") && window.innerWidth < 768) {
+          closeSidebarFunc();
         }
       });
     });
