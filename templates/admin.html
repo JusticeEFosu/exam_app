@@ -3,103 +3,166 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Panel - Exam App</title>
+  <title>Admin Panel - CBT Practice</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'academic-blue': '#1e3a8a',
+            'academic-blue-light': '#3b82f6',
+            'academic-blue-dark': '#1e40af',
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #f9fafb;
+      font-family: 'Inter', sans-serif;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col">
-  
+<body class="min-h-screen flex flex-col bg-gray-50">
+
   <!-- Navbar -->
-  <nav class="bg-indigo-600 text-white px-6 py-4 flex justify-between items-center shadow">
-    <h1 class="text-2xl font-semibold">Admin Panel</h1>
-    <div class="space-x-4">
-      <a href="{{ url_for('index') }}" class="hover:underline">Home</a>
-      <a href="{{ url_for('logout') }}" class="bg-white text-indigo-600 px-3 py-1 rounded-md font-medium hover:bg-indigo-100 transition">Logout</a>
+  <nav class="bg-white border-b border-gray-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <h1 class="text-2xl font-bold text-academic-blue">Admin Panel</h1>
+        <div class="flex items-center space-x-4">
+          <a href="{{ url_for('index') }}" class="text-gray-700 hover:text-academic-blue font-medium transition duration-200">
+            Home
+          </a>
+          <a href="{{ url_for('logout') }}" class="bg-academic-blue text-white px-4 py-2 rounded-lg font-medium hover:bg-academic-blue-dark transition duration-200 shadow-sm">
+            Logout
+          </a>
+        </div>
+      </div>
     </div>
   </nav>
 
-  <main class="flex-grow px-6 py-8">
+  <main class="flex-grow px-4 sm:px-6 lg:px-8 py-8">
     <!-- Add Question Form -->
-    <section class="max-w-3xl mx-auto bg-white p-6 rounded-2xl shadow-md mb-10">
-      <h2 class="text-xl font-semibold mb-4 text-indigo-700">Add New Question</h2>
-      <form method="POST" class="space-y-4">
+    <section class="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-md border border-gray-200 mb-8">
+      <div class="flex items-center mb-6">
+        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+          <svg class="w-6 h-6 text-academic-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900">Add New Question</h2>
+      </div>
+
+      <form method="POST" class="space-y-5">
         <div>
-          <label class="block mb-1 font-medium">Question:</label>
-          <textarea name="question_text" class="w-full border border-gray-300 rounded-md p-2" required></textarea>
+          <label class="block mb-2 font-semibold text-gray-700">Question Text:</label>
+          <textarea name="question_text" rows="3" class="w-full border-2 border-gray-200 rounded-lg p-3 focus:border-academic-blue focus:ring-2 focus:ring-blue-100 transition duration-200 outline-none" placeholder="Enter the question..." required></textarea>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block mb-1 font-medium">Option 1:</label>
-            <input type="text" name="option1" class="w-full border border-gray-300 rounded-md p-2" required>
+            <label class="block mb-2 font-semibold text-gray-700">Option 1:</label>
+            <input type="text" name="option1" class="w-full border-2 border-gray-200 rounded-lg p-3 focus:border-academic-blue focus:ring-2 focus:ring-blue-100 transition duration-200 outline-none" placeholder="First option" required>
           </div>
           <div>
-            <label class="block mb-1 font-medium">Option 2:</label>
-            <input type="text" name="option2" class="w-full border border-gray-300 rounded-md p-2" required>
+            <label class="block mb-2 font-semibold text-gray-700">Option 2:</label>
+            <input type="text" name="option2" class="w-full border-2 border-gray-200 rounded-lg p-3 focus:border-academic-blue focus:ring-2 focus:ring-blue-100 transition duration-200 outline-none" placeholder="Second option" required>
           </div>
           <div>
-            <label class="block mb-1 font-medium">Option 3:</label>
-            <input type="text" name="option3" class="w-full border border-gray-300 rounded-md p-2" required>
+            <label class="block mb-2 font-semibold text-gray-700">Option 3:</label>
+            <input type="text" name="option3" class="w-full border-2 border-gray-200 rounded-lg p-3 focus:border-academic-blue focus:ring-2 focus:ring-blue-100 transition duration-200 outline-none" placeholder="Third option" required>
           </div>
           <div>
-            <label class="block mb-1 font-medium">Option 4:</label>
-            <input type="text" name="option4" class="w-full border border-gray-300 rounded-md p-2" required>
+            <label class="block mb-2 font-semibold text-gray-700">Option 4:</label>
+            <input type="text" name="option4" class="w-full border-2 border-gray-200 rounded-lg p-3 focus:border-academic-blue focus:ring-2 focus:ring-blue-100 transition duration-200 outline-none" placeholder="Fourth option" required>
           </div>
         </div>
 
         <div>
-          <label class="block mb-1 font-medium">Correct Option (1–4):</label>
-          <input type="number" name="correct_option" min="1" max="4" class="w-full border border-gray-300 rounded-md p-2" required>
+          <label class="block mb-2 font-semibold text-gray-700">Correct Option (1–4):</label>
+          <input type="number" name="correct_option" min="1" max="4" class="w-full md:w-1/3 border-2 border-gray-200 rounded-lg p-3 focus:border-academic-blue focus:ring-2 focus:ring-blue-100 transition duration-200 outline-none" placeholder="e.g., 1" required>
         </div>
 
-        <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-md font-medium hover:bg-indigo-700 transition">Add Question</button>
+        <button type="submit" class="bg-academic-blue text-white px-8 py-3 rounded-lg font-semibold hover:bg-academic-blue-dark transition duration-200 shadow-md hover:shadow-lg">
+          Add Question
+        </button>
       </form>
     </section>
 
     <!-- Questions Table -->
-    <section class="max-w-6xl mx-auto bg-white p-6 rounded-2xl shadow-md">
-      <h2 class="text-xl font-semibold mb-4 text-indigo-700">All Questions</h2>
+    <section class="max-w-7xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-md border border-gray-200">
+      <div class="flex items-center mb-6">
+        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+          <svg class="w-6 h-6 text-academic-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900">All Questions</h2>
+      </div>
+
       <div class="overflow-x-auto">
-        <table class="min-w-full border border-gray-200 rounded-lg overflow-hidden">
-          <thead class="bg-indigo-100">
-            <tr>
-              <th class="py-2 px-3 text-left">ID</th>
-              <th class="py-2 px-3 text-left">Question</th>
-              <th class="py-2 px-3 text-left">Option 1</th>
-              <th class="py-2 px-3 text-left">Option 2</th>
-              <th class="py-2 px-3 text-left">Option 3</th>
-              <th class="py-2 px-3 text-left">Option 4</th>
-              <th class="py-2 px-3 text-left">Answer</th>
-              <th class="py-2 px-3 text-center">Action</th>
+        <table class="min-w-full">
+          <thead>
+            <tr class="bg-gray-50 border-b-2 border-gray-200">
+              <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">ID</th>
+              <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Question</th>
+              <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Option 1</th>
+              <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Option 2</th>
+              <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Option 3</th>
+              <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Option 4</th>
+              <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Answer</th>
+              <th class="py-3 px-4 text-center text-sm font-semibold text-gray-700">Action</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="divide-y divide-gray-200">
             {% for q in questions %}
-            <tr class="border-t border-gray-200 hover:bg-gray-50">
-              <td class="py-2 px-3">{{ q.id }}</td>
-              <td class="py-2 px-3">{{ q.question_text }}</td>
-              <td class="py-2 px-3">{{ q.option1 }}</td>
-              <td class="py-2 px-3">{{ q.option2 }}</td>
-              <td class="py-2 px-3">{{ q.option3 }}</td>
-              <td class="py-2 px-3">{{ q.option4 }}</td>
-              <td class="py-2 px-3">{{ q.correct_option }}</td>
-              <td class="py-2 px-3 text-center">
-                <a href="{{ url_for('delete_question', id=q.id) }}" class="text-red-600 hover:underline">Delete</a>
+            <tr class="hover:bg-gray-50 transition duration-150">
+              <td class="py-3 px-4 text-sm text-gray-600">{{ q.id }}</td>
+              <td class="py-3 px-4 text-sm text-gray-800 font-medium">{{ q.question_text }}</td>
+              <td class="py-3 px-4 text-sm text-gray-600">{{ q.option1 }}</td>
+              <td class="py-3 px-4 text-sm text-gray-600">{{ q.option2 }}</td>
+              <td class="py-3 px-4 text-sm text-gray-600">{{ q.option3 }}</td>
+              <td class="py-3 px-4 text-sm text-gray-600">{{ q.option4 }}</td>
+              <td class="py-3 px-4 text-sm">
+                <span class="inline-flex items-center justify-center w-8 h-8 bg-green-100 text-green-700 font-semibold rounded-full">
+                  {{ q.correct_option }}
+                </span>
+              </td>
+              <td class="py-3 px-4 text-center">
+                <a href="{{ url_for('delete_question', id=q.id) }}" class="inline-flex items-center text-red-600 hover:text-red-800 font-medium transition duration-200">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                  Delete
+                </a>
               </td>
             </tr>
             {% else %}
-            <tr><td colspan="8" class="text-center py-4 text-gray-500">No questions found.</td></tr>
+            <tr>
+              <td colspan="8" class="text-center py-8">
+                <div class="flex flex-col items-center">
+                  <svg class="w-16 h-16 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  <p class="text-gray-500 font-medium">No questions found.</p>
+                  <p class="text-gray-400 text-sm">Add your first question using the form above.</p>
+                </div>
+              </td>
+            </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
     </section>
   </main>
+
+  <!-- Footer -->
+  <footer class="bg-white text-center py-6 border-t border-gray-200 mt-8">
+    <p class="text-gray-500 text-sm">© 2025 TestNova Admin Panel</p>
+  </footer>
+
 </body>
 </html>

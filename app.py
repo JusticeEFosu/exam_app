@@ -2,18 +2,23 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import mysql.connector
 import random
 import os
+from dotenv import load_dotenv
+
+# ------------------ LOAD ENVIRONMENT VARIABLES ------------------
+load_dotenv()  # this loads .env file variables into the environment
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)  # ensures session is cleared on restart
+app.secret_key = os.getenv("FLASK_SECRET_KEY", os.urandom(24))  # fallback to random key if missing
 
 # ------------------ DATABASE CONNECTION ------------------
 db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="Justice1999",
-    database="exam_app"
+    host=os.getenv("DB_HOST", "localhost"),
+    user=os.getenv("DB_USER", "root"),
+    password=os.getenv("DB_PASS"),
+    database=os.getenv("DB_NAME", "exam_app")
 )
 cursor = db.cursor(dictionary=True)
+
 
 # ------------------ HOME PAGE ------------------
 @app.route('/')

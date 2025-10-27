@@ -6,6 +6,19 @@
   <title>Exam - CBT Practice</title>
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'academic-blue': '#1e3a8a',
+            'academic-blue-light': '#3b82f6',
+            'academic-blue-dark': '#1e40af',
+          }
+        }
+      }
+    }
+  </script>
 </head>
 <body class="bg-gray-50 min-h-screen font-sans">
 
@@ -13,9 +26,9 @@
     <!-- Mobile Menu Button (only visible on mobile) -->
     <button 
       id="menuToggle" 
-      class="md:hidden fixed top-4 right-4 z-50 bg-blue-500 text-white p-3 rounded-md shadow-lg hover:bg-blue-600 transition"
+      class="md:hidden fixed top-4 left-4 z-50 bg-academic-blue bg-opacity-90 backdrop-blur-sm text-white p-2.5 rounded-lg shadow-lg hover:bg-academic-blue-dark transition-all duration-200"
       aria-label="Toggle menu">
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
       </svg>
     </button>
@@ -24,142 +37,203 @@
     <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
 
     <!-- LEFT PANEL: Question Navigation -->
-    <aside id="sidebar" class="w-1/4 bg-gray-100 border-r border-gray-300 p-4 md:static md:translate-x-0 fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out z-40 md:w-1/4 w-72 overflow-y-auto">
+    <aside id="sidebar" class="w-1/4 bg-white border-r border-gray-200 p-6 md:static md:translate-x-0 fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out z-40 md:w-1/4 w-72 overflow-y-auto shadow-sm">
       <!-- Close button for mobile (only visible on mobile) -->
-      <button id="closeSidebar" class="md:hidden absolute top-4 right-4 text-gray-600 hover:text-gray-800">
+      <button id="closeSidebar" class="md:hidden absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
       </button>
       
-      <h2 class="text-xl font-semibold mb-4 text-gray-700">Questions</h2>
-      <div id="questionNav" class="grid grid-cols-5 gap-2"></div>
+      <div class="mb-6">
+        <h2 class="text-lg font-bold text-academic-blue mb-2">Question Navigator</h2>
+        <p class="text-sm text-gray-600">Click to jump to any question</p>
+      </div>
+      
+      <div id="questionNav"></div>
     </aside>
 
     <!-- RIGHT PANEL: Main Exam Area -->
-    <main class="flex-1 flex flex-col justify-between p-6">
-      <header class="mb-4">
-        <h1 class="text-2xl font-bold text-gray-800">Practice Exam</h1>
-        <div id="progress" class="text-gray-600 mt-1"></div>
-        <div id="timer" class="text-lg font-semibold text-blue-600 mt-2">Time Left: 60:00</div>
-      </header>
-      <form id="examForm" method="POST" action="{{ url_for('exam') }}"></form>
-        <div id="questions" class="flex-1">
-          {% if questions|length == 0 %}
-            <p class="text-gray-600">No questions found. Use Admin to add questions.</p>
-          {% endif %}
-
-          {% for q in questions %}
-          <div class="question hidden" data-index="{{ loop.index0 }}" data-qid="{{ q.id }}">
-            <p class="q-number font-semibold mb-1 text-gray-700">Question {{ loop.index }}:</p>
-            <p class="q-text mb-3 text-gray-800">{{ q.question_text }}</p>
-
-            <div class="options space-y-2">
-              <label class="block p-2 border rounded-md hover:bg-gray-100">
-                <input type="radio" name="{{ q.id }}" value="1" class="mr-2"> {{ q.option1 }}
-              </label>
-              <label class="block p-2 border rounded-md hover:bg-gray-100">
-                <input type="radio" name="{{ q.id }}" value="2" class="mr-2"> {{ q.option2 }}
-              </label>
-              <label class="block p-2 border rounded-md hover:bg-gray-100">
-                <input type="radio" name="{{ q.id }}" value="3" class="mr-2"> {{ q.option3 }}
-              </label>
-              <label class="block p-2 border rounded-md hover:bg-gray-100">
-                <input type="radio" name="{{ q.id }}" value="4" class="mr-2"> {{ q.option4 }}
-              </label>
-            </div>
+    <main class="flex-1 flex flex-col bg-gray-50">
+      <!-- Top Header Bar -->
+      <header class="bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
+        <div class="flex justify-between items-center">
+          <div class="pl-12 md:pl-0">
+            <h1 class="text-2xl font-bold text-academic-blue">Practice Examination</h1>
+            <div id="progress" class="text-sm text-gray-600 mt-1"></div>
           </div>
-          {% endfor %}
+          <div class="text-right">
+            <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Time Remaining</div>
+            <div id="timer" class="text-2xl font-bold text-academic-blue-light">60:00</div>
+          </div>
         </div>
+      </header>
 
-        <!-- Bottom Buttons -->
-        <div class="mt-6 flex justify-between items-center">
-          <button type="button" id="prevBtn" class="hidden bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition">Previous</button>
-          <button type="button" id="nextBtn" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">Next</button>
-          <button type="button" id="submitBtn" class="hidden bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition">Submit</button>
+      <!-- Question Area -->
+      <div class="flex-1 p-6 overflow-y-auto md:overflow-y-auto pb-32 md:pb-24">
+        <form id="examForm" method="POST" action="{{ url_for('exam') }}">
+          <div id="questions" class="max-w-4xl mx-auto">
+            {% if questions|length == 0 %}
+              <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg">
+                <p class="text-yellow-800 font-medium">No questions found. Use Admin panel to add questions.</p>
+              </div>
+            {% endif %}
+
+            {% for q in questions %}
+            <div class="question hidden bg-white rounded-lg shadow-md p-8 border border-gray-200" data-index="{{ loop.index0 }}" data-qid="{{ q.id }}">
+              <div class="mb-6">
+                <span class="inline-block bg-academic-blue text-white text-sm font-semibold px-3 py-1 rounded-full mb-3">
+                  Question {{ loop.index }}
+                </span>
+                <p class="q-text text-lg text-gray-800 leading-relaxed">{{ q.question_text }}</p>
+              </div>
+
+              <div class="options space-y-3">
+                <label class="flex items-start p-4 border-2 border-gray-200 rounded-lg hover:border-academic-blue-light hover:bg-blue-50 cursor-pointer transition-colors duration-150 group">
+                  <input type="radio" name="{{ q.id }}" value="1" class="mt-1 mr-3 w-4 h-4 text-academic-blue focus:ring-academic-blue">
+                  <span class="text-gray-700 group-hover:text-gray-900">{{ q.option1 }}</span>
+                </label>
+                <label class="flex items-start p-4 border-2 border-gray-200 rounded-lg hover:border-academic-blue-light hover:bg-blue-50 cursor-pointer transition-colors duration-150 group">
+                  <input type="radio" name="{{ q.id }}" value="2" class="mt-1 mr-3 w-4 h-4 text-academic-blue focus:ring-academic-blue">
+                  <span class="text-gray-700 group-hover:text-gray-900">{{ q.option2 }}</span>
+                </label>
+                <label class="flex items-start p-4 border-2 border-gray-200 rounded-lg hover:border-academic-blue-light hover:bg-blue-50 cursor-pointer transition-colors duration-150 group">
+                  <input type="radio" name="{{ q.id }}" value="3" class="mt-1 mr-3 w-4 h-4 text-academic-blue focus:ring-academic-blue">
+                  <span class="text-gray-700 group-hover:text-gray-900">{{ q.option3 }}</span>
+                </label>
+                <label class="flex items-start p-4 border-2 border-gray-200 rounded-lg hover:border-academic-blue-light hover:bg-blue-50 cursor-pointer transition-colors duration-150 group">
+                  <input type="radio" name="{{ q.id }}" value="4" class="mt-1 mr-3 w-4 h-4 text-academic-blue focus:ring-academic-blue">
+                  <span class="text-gray-700 group-hover:text-gray-900">{{ q.option4 }}</span>
+                </label>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </form>
+      </div>
+
+      <!-- Bottom Navigation Bar - Fixed at bottom -->
+      <div class="fixed bottom-0 left-0 md:left-[25%] right-0 bg-white rounded-none md:rounded-t-lg shadow-lg p-4 md:p-6 border-t border-gray-200 z-20">
+        <div class="flex justify-between items-center gap-4 max-w-4xl mx-auto">
+          <button type="button" id="prevBtn" class="hidden bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-200 transition-all duration-200 border border-gray-300">
+            ← Previous
+          </button>
+          <div class="flex-1"></div>
+          <button type="button" id="nextBtn" class="bg-academic-blue text-white px-6 py-3 rounded-lg font-medium hover:bg-academic-blue-dark transition-all duration-200 shadow-sm">
+            Next →
+          </button>
+          <button type="button" id="submitBtn" class="hidden bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transition-all duration-200 shadow-sm">
+            Submit Exam
+          </button>
         </div>
-      </form>
+      </div>
     </main>
   </div>
 
   <!-- Confirmation Modal -->
-  <div class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50" id="confirmModal">
-    <div class="bg-white p-6 rounded-lg shadow-lg text-center w-80">
-      <h2 class="text-lg font-semibold mb-2">Submit Exam?</h2>
-      <p class="text-gray-600 mb-4">Are you sure you want to submit your answers?</p>
-      <div class="flex justify-center gap-3">
-        <button class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600" id="confirmYes">Yes, Submit</button>
-        <button class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400" id="confirmNo">Cancel</button>
+  <div class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4" id="confirmModal">
+    <div class="bg-white rounded-xl shadow-2xl text-center max-w-md w-full p-8 border border-gray-200">
+      <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8 text-academic-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-800 mb-2">Submit Examination?</h2>
+      <p class="text-gray-600 mb-6">Are you sure you want to submit your answers? This action cannot be undone.</p>
+      <div class="flex gap-3 justify-center">
+        <button class="bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transition-all duration-200 shadow-sm" id="confirmYes">
+          Yes, Submit
+        </button>
+        <button class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-300 transition-all duration-200" id="confirmNo">
+          Cancel
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Tailwind Styles for Active States -->
- <!-- Tailwind Styles for Active States (plain CSS, works with CDN) -->
-<style>
-  /* base look for the nav buttons (so they are visible even without hover) */
-  .nav-btn {
-    width: 2.5rem;            /* w-10 */
-    height: 2.5rem;           /* h-10 */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.375rem;  /* rounded-md */
-    border: 1px solid #d1d5db;/* border-gray-300 */
-    color: #374151;           /* text-gray-700 */
-    background-color: #e5e7eb;/* bg-gray-200 */
-    font-weight: 500;
-    transition: background-color .15s ease, color .15s ease, border-color .15s ease;
-  }
-
-  .nav-btn:hover {
-    background-color: #60a5fa; /* blue-400 */
-    color: #ffffff;
-  }
-
-  .nav-btn.active {
-    background-color: #3b82f6; /* blue-500 */
-    color: #ffffff;
-    border-color: #2563eb;     /* blue-600 */
-  }
-
-  .nav-btn.answered {
-    background-color: #22c55e; /* green-500 */
-    color: #ffffff;
-    border-color: #16a34a;     /* green-600 */
-  }
-
-  /* make the nav column vertically scrollable if very long */
-  #questionNav .nav-grid {
-    display: grid;
-    grid-template-columns: repeat(5, auto);
-    gap: 0.5rem;
-  }
-
-  /* responsive: fewer columns on small screens */
-  @media (max-width: 640px) {
-    #questionNav .nav-grid {
-      grid-template-columns: repeat(5, auto);
+  <!-- Styles -->
+  <style>
+    /* Navigation grid wrapper created by JavaScript */
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
     }
-  }
 
-  /* Prevent body scroll when sidebar is open on mobile */
-  body.sidebar-open {
-    overflow: hidden;
-  }
-
-  /* Mobile sidebar animation */
-  @media (max-width: 767px) {
-    body.sidebar-open #sidebar {
-      transform: translateX(0);
+    /* Navigation button styles */
+    .nav-btn {
+      width: 2.5rem;
+      height: 2.5rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.5rem;
+      border: 2px solid #e5e7eb;
+      color: #4b5563;
+      background-color: #f9fafb;
+      font-weight: 600;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
-    
-    body.sidebar-open #overlay {
-      display: block;
-    }
-  }
-</style>
 
+    .nav-btn:hover {
+      background-color: #3b82f6;
+      color: #ffffff;
+      border-color: #3b82f6;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+    }
+
+    .nav-btn.active {
+      background-color: #1e3a8a;
+      color: #ffffff;
+      border-color: #1e3a8a;
+      box-shadow: 0 4px 6px rgba(30, 58, 138, 0.3);
+    }
+
+    .nav-btn.answered {
+      background-color: #22c55e;
+      color: #ffffff;
+      border-color: #22c55e;
+      box-shadow: 0 2px 4px rgba(34, 197, 94, 0.2);
+    }
+
+    /* Prevent body scroll when sidebar is open on mobile */
+    body.sidebar-open {
+      overflow: hidden;
+    }
+
+    /* Mobile sidebar animation */
+    @media (max-width: 767px) {
+      body.sidebar-open #sidebar {
+        transform: translateX(0);
+      }
+      
+      body.sidebar-open #overlay {
+        display: block;
+      }
+    }
+
+    /* Radio button styling */
+    input[type="radio"]:checked + span {
+      font-weight: 600;
+    }
+
+    input[type="radio"]:checked {
+      accent-color: #1e3a8a;
+    }
+
+    /* Selected option highlight */
+    input[type="radio"]:checked + span {
+      color: #1e3a8a;
+    }
+
+    label:has(input[type="radio"]:checked) {
+      background-color: #eff6ff;
+      border-color: #1e3a8a;
+    }
+  </style>
 
   <!-- Script -->
   <script defer src="{{ url_for('static', filename='script.js') }}"></script>
