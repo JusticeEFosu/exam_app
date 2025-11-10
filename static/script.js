@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const progress = document.getElementById('progress');
   let currentQuestion = 0;
 
-  // ✅ Build numbered question buttons
+  // Build numbered question buttons
   const btnWrapper = document.createElement('div');
   btnWrapper.classList.add('nav-grid');
   navContainer.appendChild(btnWrapper);
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
     submitBtn.style.display = currentQuestion === questions.length - 1 ? 'inline-block' : 'none';
   }
 
-  // ✅ Mark answered questions
+  // Mark answered questions
   document.querySelectorAll('input[type="radio"]').forEach(input => {
     input.addEventListener('change', () => {
       const qDiv = input.closest('.question');
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // ✅ Navigation buttons
+  // Navigation buttons
   nextBtn.addEventListener('click', () => {
     if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1);
   });
@@ -82,12 +82,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-  // ✅ Initialize first question
+  // Initialize first question
   showQuestion(0);
 });
 
 
-// ================== TIMER ==================
+// TIMER 
 const timerDisplay = document.getElementById('timer');
 let totalSeconds = 3600; // 60 minutes
 

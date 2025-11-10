@@ -61,6 +61,19 @@
     </div>
   </nav>
 
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        {% for category, message in messages %}
+          <div class="{% if category == 'error' %}bg-red-50 border-l-4 border-red-500{% else %}bg-blue-50 border-l-4 border-blue-500{% endif %} p-4 rounded mb-2">
+            <p class="{% if category == 'error' %}text-red-700{% else %}text-blue-700{% endif %} font-medium">{{ message }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
   <!-- Main content -->
   <main class="flex flex-1 flex-col items-center justify-center text-center px-4 py-6">
     <!-- Hero Section -->
@@ -81,11 +94,11 @@
         Test your knowledge with our computer-based testing platform. Each exam features randomly selected questions to ensure a unique practice experience.
       </p>
 
-      <!-- CTA Button -->
-      <a href="{{ url_for('exam') }}"
-         class="inline-block bg-academic-blue hover:bg-academic-blue-dark text-white font-semibold py-3 px-8 rounded-lg text-base transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 mb-8">
+      <!-- CTA Button - CHANGED TO BUTTON -->
+      <button onclick="openExamModal()"
+         class="inline-block bg-academic-blue hover:bg-academic-blue-dark text-white font-semibold py-3 px-8 rounded-lg text-base transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 mb-8 cursor-pointer">
         Start Practice Exam
-      </a>
+      </button>
 
       <!-- Features Grid -->
       <div class="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto text-left">
@@ -136,13 +149,95 @@
     <p class="text-gray-500 text-sm">© {{ current_year or "2025" }} Fosu Justice Emmanuel. All rights reserved.</p>
   </footer>
 
-  <!-- Mobile Menu Toggle Script -->
+  <!-- Exam Number Modal -->
+  <div id="examModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-8 transform transition-all">
+      <!-- Modal Header -->
+      <div class="flex justify-center mb-4">
+        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+          <svg class="w-8 h-8 text-academic-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <h2 class="text-2xl font-bold text-gray-900 text-center mb-2">Start Your Exam</h2>
+      <p class="text-gray-600 text-center mb-6 text-sm">Please enter your details to begin</p>
+
+      <!-- Form -->
+      <form action="{{ url_for('exam') }}" method="POST" id="examForm">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Examination Number *</label>
+            <input 
+              type="text" 
+              name="exam_number" 
+              id="examNumber"
+              required
+              class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:border-academic-blue focus:ring-2 focus:ring-blue-100 transition duration-200"
+              placeholder="e.g., 2024001">
+          </div>
+
+        
+
+        <!-- Buttons -->
+        <div class="flex gap-3 mt-6">
+          <button 
+            type="button" 
+            onclick="closeExamModal()"
+            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-lg font-semibold transition duration-200">
+            Cancel
+          </button>
+          <button 
+            type="submit"
+            class="flex-1 bg-academic-blue hover:bg-academic-blue-dark text-white px-6 py-3 rounded-lg font-semibold transition duration-200 shadow-md hover:shadow-lg">
+            Start Exam
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script>
+    // Mobile Menu Toggle
     const menuBtn = document.getElementById('menuBtn');
     const mobileMenu = document.getElementById('mobileMenu');
 
     menuBtn.addEventListener('click', () => {
       mobileMenu.classList.toggle('hidden');
+    });
+
+    // Exam Modal Functions
+    function openExamModal() {
+      const modal = document.getElementById('examModal');
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      
+      setTimeout(() => {
+        document.getElementById('examNumber').focus();
+      }, 100);
+    }
+
+    function closeExamModal() {
+      const modal = document.getElementById('examModal');
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      document.getElementById('examForm').reset();
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('examModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeExamModal();
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeExamModal();
+      }
     });
   </script>
 
