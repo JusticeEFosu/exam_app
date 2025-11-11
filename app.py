@@ -72,12 +72,11 @@ def exam():
             cursor.execute("INSERT INTO results (user_name, score) VALUES (%s, %s)", (username, score))
             db.commit()
             
-            # Clear session
-            session.pop('exam_number', None)
-            session.pop('name', None)
+            # Don't Clear session
 
             return render_template('result.html', score=score, username=username, total_questions=total_questions)
-    
+
+
     # Check if user has valid exam number in session
     if 'exam_number' not in session:
         return redirect(url_for('index'))
@@ -98,6 +97,13 @@ def exam():
         questions = []
 
     return render_template('exam.html', questions=questions)
+
+# ------------------ CLEAR SESSION (FOR GO TO HOME) ------------------
+@app.route('/clear-session')
+def clear_session():
+    session.pop('exam_number', None)
+    session.pop('name', None)
+    return redirect(url_for('index'))
 
 # ADMIN LOGIN 
 @app.route('/admin-login', methods=['GET', 'POST'])
