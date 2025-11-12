@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review Answers - TestNova</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'academic-blue': '#1e3a8a',
+            'academic-blue-light': '#3b82f6',
+            'academic-blue-dark': '#1e40af',
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-gray-50">
+
+  <!-- Navbar -->
+  <nav class="bg-white border-b border-gray-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <h1 class="text-2xl font-bold text-academic-blue">TestNova</h1>
+        <div class="flex items-center space-x-4">
+          <a href="{{ url_for('clear_session') }}" class="text-gray-700 hover:text-academic-blue font-medium transition duration-200">
+            Exit Review
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-grow px-4 py-8">
+    <div class="max-w-5xl mx-auto">
+      <!-- Header -->
+      <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Answer Review</h2>
+        <div class="flex flex-wrap gap-4 text-sm">
+          <div>
+            <span class="text-gray-600">Student:</span>
+            <span class="font-semibold text-gray-900">{{ username }}</span>
+          </div>
+          <div>
+            <span class="text-gray-600">Score:</span>
+            <span class="font-semibold text-academic-blue">{{ score }}/{{ total }}</span>
+          </div>
+          <div>
+            <span class="text-gray-600">Correct:</span>
+            <span class="font-semibold text-green-600">{{ correct_answers|length }}</span>
+          </div>
+          <div>
+            <span class="text-gray-600">Incorrect:</span>
+            <span class="font-semibold text-red-600">{{ incorrect_answers|length }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Incorrect Answers Section -->
+      {% if incorrect_answers %}
+      <div class="mb-8">
+        <div class="flex items-center mb-4">
+          <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900">Incorrect Answers ({{ incorrect_answers|length }})</h3>
+        </div>
+
+        <div class="space-y-4">
+          {% for attempt in incorrect_answers %}
+          <div class="bg-white rounded-lg shadow-md border-l-4 border-red-500 p-6">
+            <!-- Question -->
+            <div class="mb-4">
+              <p class="text-sm font-semibold text-gray-500 mb-2">Question:</p>
+              <p class="text-base text-gray-900">{{ attempt.question_text }}</p>
+            </div>
+
+            <!-- Options -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+              {% for i in range(1, 5) %}
+                {% set option_text = attempt['option' ~ i] %}
+                <div class="p-3 rounded-lg border-2 
+                  {% if i == attempt.selected_option %}
+                    bg-red-50 border-red-300
+                  {% elif i == attempt.correct_option %}
+                    bg-green-50 border-green-300
+                  {% else %}
+                    bg-gray-50 border-gray-200
+                  {% endif %}">
+                  <div class="flex items-start">
+                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full mr-2 flex-shrink-0
+                      {% if i == attempt.selected_option %}
+                        bg-red-500 text-white
+                      {% elif i == attempt.correct_option %}
+                        bg-green-500 text-white
+                      {% else %}
+                        bg-gray-300 text-gray-700
+                      {% endif %}">
+                      {{ i }}
+                    </span>
+                    <span class="text-sm {% if i == attempt.selected_option %}text-red-900 font-semibold{% elif i == attempt.correct_option %}text-green-900 font-semibold{% else %}text-gray-700{% endif %}">
+                      {{ option_text }}
+                    </span>
+                  </div>
+                  {% if i == attempt.selected_option %}
+                    <p class="text-xs text-red-700 mt-1 ml-8">Your answer (Wrong)</p>
+                  {% elif i == attempt.correct_option %}
+                    <p class="text-xs text-green-700 mt-1 ml-8">Correct answer</p>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+
+            <!-- Explanation -->
+            {% if attempt.explanation %}
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+              <div class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                  <p class="text-sm font-semibold text-blue-900 mb-1">Explanation:</p>
+                  <p class="text-sm text-blue-800">{{ attempt.explanation }}</p>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Correct Answers Section -->
+      {% if correct_answers %}
+      <div class="mb-8">
+        <div class="flex items-center mb-4">
+          <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900">Correct Answers ({{ correct_answers|length }})</h3>
+        </div>
+
+        <div class="space-y-4">
+          {% for attempt in correct_answers %}
+          <div class="bg-white rounded-lg shadow-md border-l-4 border-green-500 p-6">
+            <!-- Question -->
+            <div class="mb-4">
+              <p class="text-sm font-semibold text-gray-500 mb-2">Question:</p>
+              <p class="text-base text-gray-900">{{ attempt.question_text }}</p>
+            </div>
+
+            <!-- Options -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+              {% for i in range(1, 5) %}
+                {% set option_text = attempt['option' ~ i] %}
+                <div class="p-3 rounded-lg border-2 
+                  {% if i == attempt.correct_option %}
+                    bg-green-50 border-green-300
+                  {% else %}
+                    bg-gray-50 border-gray-200
+                  {% endif %}">
+                  <div class="flex items-start">
+                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full mr-2 flex-shrink-0
+                      {% if i == attempt.correct_option %}
+                        bg-green-500 text-white
+                      {% else %}
+                        bg-gray-300 text-gray-700
+                      {% endif %}">
+                      {{ i }}
+                    </span>
+                    <span class="text-sm {% if i == attempt.correct_option %}text-green-900 font-semibold{% else %}text-gray-700{% endif %}">
+                      {{ option_text }}
+                    </span>
+                  </div>
+                  {% if i == attempt.correct_option %}
+                    <p class="text-xs text-green-700 mt-1 ml-8">Your answer (Correct!)</p>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+
+            <!-- Explanation -->
+            {% if attempt.explanation %}
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+              <div class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                  <p class="text-sm font-semibold text-blue-900 mb-1">Explanation:</p>
+                  <p class="text-sm text-blue-800">{{ attempt.explanation }}</p>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Action Buttons -->
+      <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <a href="{{ url_for('exam') }}" class="bg-academic-blue hover:bg-academic-blue-dark text-white px-6 py-3 rounded-lg font-semibold transition duration-200 shadow-md hover:shadow-lg text-center">
+            Retake Exam
+          </a>
+          <a href="{{ url_for('clear_session') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-lg font-semibold transition duration-200 text-center">
+            Go to Home
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white text-center py-6 border-t border-gray-200 mt-8">
+    <p class="text-gray-500 text-sm">© 2025 TestNova</p>
+  </footer>
+
+</body>
+</html>
